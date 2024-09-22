@@ -1,0 +1,204 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace HostalMngm_System
+{
+    public partial class Student_Details : Form
+    {
+        public Student_Details()
+        {
+            InitializeComponent();
+            comboBoxStudent_Type.SelectedIndex = 0;
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Connection conobj = new Connection();
+                SqlConnection obj = conobj.GetDBCon();
+
+                if(textBoxID.Text!=null && textBoxFname.Text!=null && textBoxLname.Text!=null && textBoxEmail.Text!=null && textBoxRoomNo.Text!=null && textBoxAddress.Text!=null && textBoxContact.Text!=null && !radioButtonMale.Checked && !radioButtonFemale.Checked && comboBoxStudent_Type.SelectedItem!=null)
+                {
+                    string sql = "Insert into  Users(UserID,FName,LName,User_Address,Gender,User_Email,Room_No,Payment_ID )" +
+                    "values('" + textBoxID.Text + "','" + textBoxFname.Text + "','" + textBoxLname.Text + "','" + textBoxAddress.Text + "','"+radioButtonMale+"','"+radioButtonFemale+"','" + textBoxEmail.Text + "','" + textBoxRoomNo.Text + "')";
+
+                    string sql1 = "Insert into User_contact(UserID,User_Contact)" +
+                    "values('" + textBoxID.Text + "','" + textBoxContact.Text + "')";
+
+                    string sql2 = "Insert into Student(UserID,Student_type)" +
+                    "values('" + textBoxID.Text + "','" + comboBoxStudent_Type.SelectedIndex + "')";
+
+                    SqlCommand connobj = new SqlCommand(sql,obj);
+                    connobj.ExecuteNonQuery();
+                    MessageBox.Show("Record Saved Successfully");
+
+                    SqlCommand connobj1=new SqlCommand(sql1,obj);
+                    connobj1.ExecuteNonQuery();
+                    MessageBox.Show("Record Saved Successfully");
+
+                    SqlCommand connobj2 = new SqlCommand();
+                    connobj2.ExecuteNonQuery();
+                    MessageBox.Show("Record Saved Successfully");
+                }
+            }
+            catch(Exception ex) 
+            {
+                MessageBox.Show("Connection is failed"+ex.Message);
+            }
+        }
+
+        private void buttonUpdate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Connection conobj = new Connection();
+                SqlConnection obj = conobj.GetDBCon();
+
+                if (textBoxID.Text != null && textBoxFname.Text != null && textBoxLname.Text != null && textBoxEmail.Text != null && textBoxRoomNo.Text != null && textBoxAddress.Text != null && textBoxContact.Text != null && !radioButtonMale.Checked && !radioButtonFemale.Checked && comboBoxStudent_Type.SelectedItem!=null)
+                {
+                    string sql = "Update Users Set FName='" + textBoxFname.Text + "',LName='" + textBoxLname + "',User_Address='" + textBoxAddress.Text + "',Gender='"+radioButtonMale+"' && '"+radioButtonFemale+"',User_Email='" + textBoxEmail.Text + "', Room_No='" + textBoxRoomNo.Text + "'"+
+                    "where UserID='" + textBoxID.Text + "'";
+
+                    string sql1 = "Update User_contact Set User_Contact='" + textBoxContact.Text + "'" +
+                    "where UserID='" + textBoxID.Text + "'";
+
+                    string sql2 = "Update Student Set Student_type='" + comboBoxStudent_Type.SelectedIndex + "'" +
+                    "where UserID='" + textBoxID.Text + "'";
+                     
+                    SqlCommand connobj = new SqlCommand(sql, obj);
+                    connobj.ExecuteNonQuery();
+                    MessageBox.Show("Record Updated Successfully");
+
+                    SqlCommand connobj1=new SqlCommand(sql1, obj);
+                    connobj1.ExecuteNonQuery();
+                    MessageBox.Show("Record Updated Successfully");
+
+                    SqlCommand connobj2=new SqlCommand(sql2, obj);
+                    connobj2.ExecuteNonQuery();
+                    MessageBox.Show("Record Updated Successfully");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Connection is failed" + ex.Message);
+            }
+        }
+
+        private void buttonDelete_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Connection conobj = new Connection();
+                SqlConnection obj = conobj.GetDBCon();
+
+                if (textBoxID.Text != null && textBoxFname.Text != null && textBoxLname.Text != null && textBoxEmail.Text != null && textBoxRoomNo.Text != null && textBoxAddress.Text != null && textBoxContact.Text != null && !radioButtonMale.Checked && !radioButtonFemale.Checked && comboBoxStudent_Type.SelectedItem != null )
+                {
+                    string sql = "Delete from Users where UserID='" + textBoxID.Text + "'";
+
+                    string sql1 = "Delete from User_contact where UserID='" + textBoxID.Text + "'";
+
+                    string sql2 = "Delete from Student where UserID='" + textBoxID.Text + "'";
+
+                    SqlCommand connobj = new SqlCommand(sql, obj);
+                    connobj.ExecuteNonQuery();
+                    MessageBox.Show("Record Deleted Successfully");
+
+                    SqlCommand connobj1 = new SqlCommand(sql1, obj);
+                    connobj1.ExecuteNonQuery();
+                    MessageBox.Show("Record Deleted Successfully");
+
+                    SqlCommand connobj2 = new SqlCommand();
+                    connobj2.ExecuteNonQuery();
+                    MessageBox.Show("Record Deleted Successfully");
+                }
+            }
+            catch(Exception ex) 
+            {
+                MessageBox.Show("Connection is failed" + ex.Message);
+            }
+
+
+        }
+
+        private void buttonViewAll_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Connection obj = new Connection();
+
+                string sql = "Select * from Users";
+                string sql1 = "Select * from User_contact";
+                string sql2 = "Select * from Student";
+
+                SqlCommand conobj = new SqlCommand(sql, obj.GetDBCon());
+                SqlCommand conobj1 = new SqlCommand(sql1, obj.GetDBCon());
+                SqlCommand conobj2 = new SqlCommand(sql2, obj.GetDBCon());
+
+                SqlDataAdapter adapter = new SqlDataAdapter(conobj);
+                SqlDataAdapter adapter1 = new SqlDataAdapter(conobj1);
+                SqlDataAdapter adapter2 = new SqlDataAdapter(conobj2);
+
+                DataTable datatable = new DataTable();
+
+                adapter.Fill(datatable);
+                adapter1.Fill(datatable);
+                adapter2.Fill(datatable);
+
+
+                //Display data in data grid view
+                dataGridViewAll.DataSource = datatable;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private void buttonClear_Click(object sender, EventArgs e)
+        {
+            textBoxID.Text = null;
+            textBoxFname.Text = null;
+            textBoxLname.Text = null;
+            textBoxAddress.Text = null;
+            textBoxEmail.Text = null;
+            textBoxRoomNo.Text = null;
+            comboBoxStudent_Type.SelectedItem = null;
+            radioButtonMale.Checked = false;
+            radioButtonFemale.Checked = false;
+            textBoxContact.Text = null;
+        }
+
+        private void buttonBack_Click(object sender, EventArgs e)
+        {
+            Home_Page home=new Home_Page();
+            home.Show();
+            this.Hide();
+        }
+
+        private void label_Exit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void textBoxContact_TextChanged(object sender, EventArgs e)
+        {
+            if(textBoxContact.Text!=string.Empty)
+            {
+                labelMsgContact.Visible = false;
+            }
+            else
+            {
+                labelMsgContact.Visible=true;
+            }
+        }
+    }
+}
